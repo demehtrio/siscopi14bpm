@@ -4960,7 +4960,7 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Banners Individuais: Polícia Ágil, Dentro do QSH & e-COP */}
+                {/* Banners Individuais: Polícia Ágil, Dentro do QSH & Escalas PMPE */}
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
                   {/* Banner Polícia Ágil */}
                   <div className="p-6 bg-gradient-to-br from-blue-950 via-blue-900 to-indigo-950 text-white rounded-[2.5rem] border border-blue-800/50 shadow-2xl overflow-hidden relative flex flex-col justify-between gap-6 group">
@@ -5040,48 +5040,44 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* Banner e-COP */}
-                  <div className="p-6 bg-slate-50 text-slate-800 rounded-[2.5rem] border border-slate-200 shadow-xl overflow-hidden relative flex flex-col justify-between gap-6 group">
+                  {/* Banner Escalas PMPE */}
+                  <div className="p-6 bg-gradient-to-br from-blue-950 via-slate-900 to-indigo-950 text-white rounded-[2.5rem] border border-blue-700/40 shadow-2xl overflow-hidden relative flex flex-col justify-between gap-6 group">
                     {/* Decorative background visual elements */}
-                    <div className="absolute top-0 right-0 p-16 bg-blue-500/5 rounded-full -mr-12 -mt-12 blur-2xl group-hover:bg-blue-500/10 transition-all duration-500"></div>
-                    <div className="absolute bottom-0 left-0 p-16 bg-slate-200/50 rounded-full -ml-12 -mb-12 blur-2xl group-hover:bg-slate-200/70 transition-all duration-500"></div>
+                    <div className="absolute top-0 right-0 p-16 bg-blue-500/10 rounded-full -mr-12 -mt-12 blur-2xl group-hover:bg-blue-500/20 transition-all duration-500"></div>
+                    <div className="absolute bottom-0 left-0 p-16 bg-indigo-500/10 rounded-full -ml-12 -mb-12 blur-2xl group-hover:bg-indigo-500/15 transition-all duration-500"></div>
                     
                     <div className="relative z-10 flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left">
-                      <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center border border-slate-200 shadow-sm overflow-hidden shrink-0 group-hover:scale-105 transition-transform duration-300 p-2">
+                      <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center border border-white/20 shadow-md overflow-hidden shrink-0 group-hover:scale-105 transition-transform duration-300 p-2">
                         <SafeImage 
                           src="https://www.pm.pe.gov.br/wp-content/uploads/2020/01/cropped-logo-pmpe-150x150.png" 
-                          alt="e-COP Logo" 
+                          alt="Escalas PMPE Logo" 
                           className="w-full h-full object-contain" 
                           width={56} 
                           height={56} 
-                          icon={ShieldCheck} 
+                          icon={Calendar} 
                         />
                       </div>
                       <div className="space-y-1">
                         <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                          <h3 className="text-xl font-black tracking-tight text-slate-900">e-COP</h3>
-                          <span className="text-[9px] font-black bg-amber-100 border border-amber-200 text-amber-800 px-2 py-0.5 rounded-full uppercase tracking-wider animate-pulse">Em Breve</span>
-                          <span className="text-[9px] font-black bg-blue-50 border border-blue-200 text-blue-700 px-2 py-0.5 rounded-full uppercase tracking-wider">PMPE</span>
+                          <h3 className="text-xl font-black tracking-tight text-white">Escalas PMPE</h3>
+                          <span className="text-[9px] font-black bg-blue-500/25 border border-blue-500/30 text-blue-300 px-2 py-0.5 rounded-full uppercase tracking-wider">PMPE</span>
+                          <span className="text-[9px] font-black bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 px-2 py-0.5 rounded-full uppercase tracking-wider">Oficial</span>
                         </div>
-                        <p className="text-slate-700 text-xs sm:text-sm font-semibold leading-relaxed">
-                          e-COP - Coordenação de Operações Policiais
-                        </p>
-                        <p className="text-slate-500 text-[11px] font-medium leading-relaxed mt-0.5 flex items-center gap-1 justify-center sm:justify-start">
-                          <Info className="size-3 text-blue-500 shrink-0" />
-                          <span>Para acessar digite o login e a senha usada no SEI.</span>
+                        <p className="text-blue-100/90 text-xs sm:text-sm font-medium leading-relaxed">
+                          Acesse o sistema oficial de escalas de serviço da Polícia Militar de Pernambuco.
                         </p>
                       </div>
                     </div>
                     
                     <div className="relative z-10 w-full sm:w-auto self-end">
                       <a 
-                        href="https://ecop.sistemas.pm.pe.gov.br/#" 
+                        href="https://escalas.sistemas.pm.pe.gov.br/#/login" 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="w-full sm:w-auto px-5 py-3 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-xl shadow-lg shadow-blue-600/10 hover:shadow-blue-600/25 transition-all text-center flex items-center justify-center gap-2 active:scale-98 group/btn_ecop text-sm opacity-90 hover:opacity-100"
+                        className="w-full sm:w-auto px-5 py-3 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-xl shadow-lg shadow-blue-600/10 hover:shadow-blue-600/25 transition-all text-center flex items-center justify-center gap-2 active:scale-98 group/btn_escalas text-sm"
                       >
-                        <span>Acessar e-COP</span>
-                        <ExternalLink size={14} className="group-hover/btn_ecop:translate-x-0.5 group-hover/btn_ecop:-translate-y-0.5 transition-transform" />
+                        <span>Acessar Escalas PMPE</span>
+                        <ExternalLink size={14} className="group-hover/btn_escalas:translate-x-0.5 group-hover/btn_escalas:-translate-y-0.5 transition-transform" />
                       </a>
                     </div>
                   </div>
@@ -5182,7 +5178,7 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* Banner ESCALAS PMPE */}
+                  {/* Banner e-COP */}
                   <div className="p-4 sm:px-6 sm:py-4 bg-gradient-to-br from-[#3e444b] via-[#24272c] to-[#121416] text-white rounded-2xl border border-[#3e444b]/40 shadow-xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-4 group">
                     {/* Decorative background visual elements */}
                     <div className="absolute top-0 right-0 p-16 bg-blue-500/5 rounded-full -mr-12 -mt-12 blur-2xl group-hover:bg-blue-500/10 transition-all duration-500"></div>
@@ -5192,27 +5188,32 @@ export default function App() {
                         <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5 mb-1.5">
                           <img 
                             src="https://www.pm.pe.gov.br/wp-content/uploads/2020/01/cropped-logo-pmpe-150x150.png" 
-                            alt="Escalas PMPE" 
+                            alt="e-COP Logo" 
                             className="h-7 w-auto object-contain rounded-lg bg-white px-2 py-0.5 shadow-sm group-hover:scale-103 transition-transform"
                             referrerPolicy="no-referrer"
                           />
-                          <span className="text-[8px] font-black bg-blue-500/20 border border-blue-500/30 text-blue-300 px-2 py-0.5 rounded-full uppercase tracking-wider">Escalas</span>
+                          <span className="text-[8px] font-black bg-blue-500/20 border border-blue-500/30 text-blue-300 px-2 py-0.5 rounded-full uppercase tracking-wider">e-COP</span>
+                          <span className="text-[8px] font-black bg-amber-400/20 border border-amber-400/30 text-amber-300 px-2 py-0.5 rounded-full uppercase tracking-wider">PMPE</span>
                         </div>
                         <p className="text-slate-300 text-xs font-medium max-w-xl leading-relaxed">
-                          Acesso ao sistema oficial de escalas da Polícia Militar de Pernambuco.
+                          e-COP - Coordenação de Operações Policiais.
+                        </p>
+                        <p className="text-slate-400 text-[11px] font-semibold mt-0.5 flex items-center justify-center sm:justify-start gap-1">
+                          <Info className="size-3 text-blue-400 shrink-0" />
+                          <span>Para acessar digite o login e a senha usada no SEI.</span>
                         </p>
                       </div>
                     </div>
                     
                     <div className="relative z-10 w-full md:w-auto shrink-0">
                       <a 
-                        href="https://escalas.sistemas.pm.pe.gov.br/#/login" 
+                        href="https://ecop.sistemas.pm.pe.gov.br/#" 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="w-full md:w-auto px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-xl shadow-md shadow-blue-600/10 hover:shadow-blue-600/25 transition-all text-center flex items-center justify-center gap-1.5 active:scale-98 group/btn_escalas text-xs"
+                        className="w-full md:w-auto px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-xl shadow-md shadow-blue-600/10 hover:shadow-blue-600/25 transition-all text-center flex items-center justify-center gap-1.5 active:scale-98 group/btn_ecop text-xs"
                       >
-                        <span>Acessar ESCALAS PMPE</span>
-                        <ExternalLink size={12} className="group-hover/btn_escalas:translate-x-0.5 group-hover/btn_escalas:-translate-y-0.5 transition-transform" />
+                        <span>Acessar e-COP</span>
+                        <ExternalLink size={12} className="group-hover/btn_ecop:translate-x-0.5 group-hover/btn_ecop:-translate-y-0.5 transition-transform" />
                       </a>
                     </div>
                   </div>
