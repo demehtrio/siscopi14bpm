@@ -118,7 +118,7 @@ export default function CalculoKmVtr({
     }
   }, [history]);
 
-  // Fetch records from Firestore on demand (with moderate limit to conserve data)
+  // Fetch full records from Firestore checklists collection for accuracy
   const fetchRecordsFromDb = async () => {
     setLoading(true);
     try {
@@ -126,7 +126,7 @@ export default function CalculoKmVtr({
         const q = query(
           collection(db, 'checklists'),
           orderBy('timestamp', 'desc'),
-          limit(150)
+          limit(1500)
         );
         const snap = await getDocs(q);
         const list: RecordEntry[] = [];
@@ -136,7 +136,7 @@ export default function CalculoKmVtr({
         if (list.length > 0) {
           setAllRecords(list);
           if (addNotification) {
-            addNotification(`Registros sincronizados (${list.length} registros).`, 'success');
+            addNotification(`Carregados ${list.length} registros para cálculo de quilometragem.`, 'success');
           }
         }
       } else {
@@ -155,10 +155,16 @@ export default function CalculoKmVtr({
       }
     } catch (err: any) {
       console.warn("Aviso ao buscar registros de checklist:", err);
+      // Fallback is whatever is in allRecords/history
     } finally {
       setLoading(false);
     }
   };
+
+  // Fetch on mount
+  useEffect(() => {
+    fetchRecordsFromDb();
+  }, [isLocalMode, db]);
 
   // Helper to handle period presets
   const handleApplyPreset = (preset: string) => {
@@ -379,14 +385,25 @@ export default function CalculoKmVtr({
     let text = `🚔 *${omeOrigem} - CONTROLE DE QUILOMETRAGEM (PMPE)* 🚔\n`;
     text += `📅 *Período:* ${formattedStart} até ${formattedEnd}\n`;
 
-      if (mode === 'individual' && currentIndividualSummary) {
+    if (mode === 'individual' && currentIndividualSummary) {
       const v = currentIndividualSummary.vehicle;
       text += `\n🚗 *VIATURA:* ${v.prefix} (${v.plate})\n`;
       text += `📋 *Modelo:* ${v.model}\n`;
       text += `🏁 *Odômetro Inicial:* ${currentIndividualSummary.initialMileage.toLocaleString('pt-BR')} km\n`;
       text += `🏁 *Odômetro Final:* ${currentIndividualSummary.finalMileage.toLocaleString('pt-BR')} km\n`;
       text += `⚡ *KM RODADO NO PERÍODO:* ${currentIndividualSummary.kmRodado.toLocaleString('pt-BR')} km\n`;
-      text += `🔄 *Total de Turnos:* ${currentIndividualSummary.tripsCount} turno(s) registrado(s)\n`;
+      text += `🔄 *Total de Movimentações:* ${currentIndividualSummary.recordsCount} registros (${currentIndividualSummary.tripsCount} turnos)\n`;
+      
+      if (currentIndividualSummary.records.length > 0) {
+        text += `\n*Detalhamento de Saídas e Regressos:*\n`;
+        currentIndividualSummary.records.forEach((r, idx) => {
+          const rDate = r.timestamp?.toDate ? r.timestamp.toDate() : new Date(r.timestamp || 0);
+          const dataHora = format(rDate, 'dd/MM HH:mm');
+          const tipo = r.type === 'check-out' ? 'Partida' : (r.type === 'check-in' ? 'Regresso' : 'Manutenção');
+          const condutor = r.drivers?.driverName ? ` - Cmt/Cond: ${r.drivers.driverName}` : '';
+          text += `${idx + 1}. [${dataHora}] ${tipo}: ${r.mileage?.currentMileage || '---'} km${condutor}\n`;
+        });
+      }
     } else {
       text += `📊 *MODO GERAL - TODA A FROTA*\n`;
       text += `🚘 *Viaturas Monitoradas:* ${vehicles.length}\n`;
@@ -503,33 +520,37 @@ export default function CalculoKmVtr({
 
         startY += 36;
 
-        // Consolidated Summary Table for the Vehicle
-        const statusLabel = v.status === 'available' ? 'Disponível' : (v.status === 'in_use' ? 'Em Uso' : 'Manutenção');
-        const tableBody = [
-          [
-            v.prefix,
-            v.plate,
-            v.model,
-            v.category === 'moto' ? 'Motocicleta' : 'Automóvel',
-            statusLabel,
-            `${currentIndividualSummary.initialMileage.toLocaleString('pt-BR')} km`,
-            `${currentIndividualSummary.finalMileage.toLocaleString('pt-BR')} km`,
-            `${currentIndividualSummary.kmRodado.toLocaleString('pt-BR')} km`,
-            currentIndividualSummary.tripsCount.toString()
-          ]
-        ];
+        // Movements Table
+        const tableBody = currentIndividualSummary.records.map((r, idx) => {
+          const rDate = r.timestamp?.toDate ? r.timestamp.toDate() : new Date(r.timestamp || 0);
+          const dataHora = format(rDate, 'dd/MM/yyyy HH:mm');
+          const tipo = r.type === 'check-out' ? 'PARTIDA (Saída)' : 
+                       (r.type === 'check-in' ? 'REGRESSO (Devolução)' : 'MANUTENÇÃO');
+          const condutor = r.drivers?.driverName || '---';
+          const prefixoOp = r.identification?.operationalPrefix || r.drivers?.serviceType || '---';
+          const odometro = `${Number(r.mileage?.currentMileage || 0).toLocaleString('pt-BR')} km`;
+          const obs = r.mileage?.notes || (r as any).checklist?.descricaoAlteracoes || '---';
+
+          return [
+            (idx + 1).toString(),
+            dataHora,
+            tipo,
+            condutor,
+            prefixoOp,
+            odometro,
+            obs.slice(0, 35)
+          ];
+        });
 
         if (typeof (doc as any).autoTable === 'function') {
           (doc as any).autoTable({
             startY: startY,
-            head: [['Prefixo', 'Placa', 'Modelo', 'Categoria', 'Status', 'KM Inicial', 'KM Final', 'KM Rodado', 'Turnos']],
-            body: tableBody,
+            head: [['#', 'Data/Hora', 'Operação', 'Condutor', 'Prefixo Op.', 'Odômetro', 'Observações']],
+            body: tableBody.length > 0 ? tableBody : [['-', '-', 'Nenhuma movimentação registrada no período', '-', '-', '-', '-']],
             theme: 'striped',
-            headStyles: { fillColor: APP_BLUE_DARK, textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8.5 },
-            styles: { fontSize: 8, cellPadding: 3.5 },
-            columnStyles: {
-              7: { fontStyle: 'bold', textColor: [16, 185, 129] }
-            },
+            headStyles: { fillColor: APP_BLUE_DARK, textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 },
+            styles: { fontSize: 7.5, cellPadding: 2.5 },
+            alternateRowStyles: { fillColor: [248, 250, 252] },
             margin: { left: 12, right: 12 }
           });
         }
@@ -985,65 +1006,96 @@ export default function CalculoKmVtr({
             </div>
           </div>
 
-          {/* Resumo Consolidado de Rodagem da Viatura Selecionada (Baixo consumo de dados) */}
-          <div className="bg-white p-6 sm:p-8 rounded-[2.5rem] shadow-sm border border-slate-100 space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-blue-50 text-blue-600 border border-blue-100">
-                  <CheckCircle2 size={20} />
-                </div>
-                <div>
-                  <h3 className="text-base font-black text-slate-900 tracking-tight">
-                    Cálculo Consolidado da Viatura
-                  </h3>
-                  <p className="text-slate-500 text-xs font-medium">
-                    Apuração de quilometragem percorrida no período selecionado.
-                  </p>
-                </div>
+          {/* Movements Timeline Table for Individual Vehicle */}
+          <div className="bg-white p-6 sm:p-8 rounded-[2.5rem] shadow-sm border border-slate-100 space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h3 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+                  <Activity size={20} className="text-blue-600" />
+                  <span>Histórico de Deslocamentos da Viatura no Período</span>
+                </h3>
+                <p className="text-slate-500 text-xs font-medium">
+                  Relação cronológica de todas as partidas, regressos e manutenções registradas.
+                </p>
               </div>
 
               <span className="text-xs font-bold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-xl self-start sm:self-auto">
-                {currentIndividualSummary.tripsCount} turno(s) apurado(s)
+                {currentIndividualSummary.records.length} movimentação(ões)
               </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
-                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1">
-                  Viatura
-                </span>
-                <p className="text-sm font-black text-slate-800">
-                  {currentIndividualSummary.vehicle.prefix} • {currentIndividualSummary.vehicle.plate}
-                </p>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  {currentIndividualSummary.vehicle.model} ({currentIndividualSummary.vehicle.category === 'moto' ? 'Moto' : 'Carro'})
-                </p>
-              </div>
+            {currentIndividualSummary.records.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm border-collapse">
+                  <thead>
+                    <tr className="border-b border-slate-200 text-slate-400 uppercase text-[10px] font-black tracking-wider">
+                      <th className="py-3 px-3">Data / Hora</th>
+                      <th className="py-3 px-3">Operação</th>
+                      <th className="py-3 px-3">Condutor / Motorista</th>
+                      <th className="py-3 px-3">Prefixo Operacional</th>
+                      <th className="py-3 px-3 text-right">Odômetro</th>
+                      <th className="py-3 px-3 text-right">Deslocamento</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 font-medium">
+                    {currentIndividualSummary.records.map((record, index) => {
+                      const rDate = record.timestamp?.toDate ? record.timestamp.toDate() : new Date(record.timestamp || 0);
+                      const isCheckOut = record.type === 'check-out';
+                      const isCheckIn = record.type === 'check-in';
+                      const currentKm = Number(record.mileage?.currentMileage || 0);
 
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
-                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1">
-                  Odômetros no Período
-                </span>
-                <p className="text-xs font-bold text-slate-700">
-                  Inicial: <strong className="text-slate-900 font-mono">{currentIndividualSummary.initialMileage.toLocaleString('pt-BR')} km</strong>
-                </p>
-                <p className="text-xs font-bold text-slate-700 mt-1">
-                  Final: <strong className="text-slate-900 font-mono">{currentIndividualSummary.finalMileage.toLocaleString('pt-BR')} km</strong>
-                </p>
-              </div>
+                      // Calculate trip distance if check-in has a prior record
+                      let deltaKmText = '---';
+                      if (index > 0) {
+                        const prevKm = Number(currentIndividualSummary.records[index - 1].mileage?.currentMileage || 0);
+                        if (currentKm > prevKm) {
+                          deltaKmText = `+${(currentKm - prevKm).toLocaleString('pt-BR')} km`;
+                        }
+                      }
 
-              <div className="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-100">
-                <span className="text-[10px] font-black uppercase tracking-widest text-emerald-700 block mb-1">
-                  Total Rodado no Período
-                </span>
-                <p className="text-2xl font-black text-emerald-600 font-mono">
-                  {currentIndividualSummary.kmRodado.toLocaleString('pt-BR')} <span className="text-xs font-bold">KM</span>
-                </p>
-                <p className="text-[11px] font-medium text-emerald-700/80 mt-0.5">
-                  Saldo líquido calculado
+                      return (
+                        <tr key={record.id || index} className="hover:bg-slate-50 transition-colors">
+                          <td className="py-3.5 px-3 font-mono text-xs font-bold text-slate-700 whitespace-nowrap">
+                            {format(rDate, 'dd/MM/yyyy HH:mm')}
+                          </td>
+                          <td className="py-3.5 px-3">
+                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                              isCheckOut
+                                ? 'bg-emerald-100 text-emerald-800'
+                                : isCheckIn
+                                ? 'bg-blue-100 text-blue-800'
+                                : 'bg-amber-100 text-amber-800'
+                            }`}>
+                              {isCheckOut ? 'Partida' : isCheckIn ? 'Regresso' : 'Manutenção'}
+                            </span>
+                          </td>
+                          <td className="py-3.5 px-3 font-bold text-slate-800">
+                            {record.drivers?.driverName || '---'}
+                          </td>
+                          <td className="py-3.5 px-3 text-xs font-bold text-slate-600">
+                            {record.identification?.operationalPrefix || record.drivers?.serviceType || '---'}
+                          </td>
+                          <td className="py-3.5 px-3 text-right font-mono font-bold text-slate-800">
+                            {currentKm ? `${currentKm.toLocaleString('pt-BR')} km` : '---'}
+                          </td>
+                          <td className="py-3.5 px-3 text-right font-mono font-black text-emerald-600">
+                            {deltaKmText}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="py-12 text-center bg-slate-50 rounded-3xl border border-dashed border-slate-200">
+                <AlertCircle size={36} className="text-slate-300 mx-auto mb-2" />
+                <h4 className="text-base font-bold text-slate-800">Nenhum registro para esta viatura no período</h4>
+                <p className="text-xs text-slate-400 mt-1">
+                  Altere as datas inicial e final para localizar saídas anteriores desta viatura.
                 </p>
               </div>
-            </div>
+            )}
           </div>
         </div>
       )}
