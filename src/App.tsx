@@ -100,7 +100,8 @@ import {
   Phone,
   Heart,
   LifeBuoy,
-  Vote
+  Vote,
+  Gauge
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { jsPDF } from 'jspdf';
@@ -114,6 +115,7 @@ import {
   EleicoesCartilhaModal, 
   EleicoesEmblem 
 } from './components/EleicoesCartilha';
+import CalculoKmVtr from './components/CalculoKmVtr';
 import { ASSETS } from './assets/logos';
 import autovisionLogo from './assets/images/autovision_logo_1780679135411.png';
 
@@ -880,7 +882,8 @@ export default function App() {
   const [standaloneHistory, setStandaloneHistory] = useState<RecordEntry[]>([]);
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [operationType, setOperationType] = useState<'check-out' | 'check-in' | null>(null);
-  const [cadastroVtrView, setCadastroVtrView] = useState<'list' | 'history' | 'admin' | 'form'>('list');
+  const [cadastroVtrView, setCadastroVtrView] = useState<'list' | 'history' | 'mileage' | 'admin' | 'form'>('list');
+  const [mileageSelectedVehicleId, setMileageSelectedVehicleId] = useState<string | null>(null);
   const [cadastroVtrSearchTerm, setCadastroVtrSearchTerm] = useState('');
   const [cadastroVtrStatusFilter, setCadastroVtrStatusFilter] = useState<'all' | 'available' | 'in_use' | 'maintenance'>('available');
   const [cadastroVtrHistoryFilter, setCadastroVtrHistoryFilter] = useState<'all' | 'check-out' | 'check-in' | 'maintenance'>('all');
@@ -1109,7 +1112,7 @@ export default function App() {
 
   // Cadastro VTR History listener
   useEffect(() => {
-    if (!user || activeTab !== 'cadastro_vtr' || cadastroVtrView !== 'history') return;
+    if (!user || activeTab !== 'cadastro_vtr' || (cadastroVtrView !== 'history' && cadastroVtrView !== 'mileage')) return;
     if (isLocalMode) return;
     
     const constraints: any[] = [orderBy('timestamp', 'desc'), limit(cadastroVtrHistoryLimit)];
@@ -6399,6 +6402,11 @@ export default function App() {
                   isExtractingPlate={isExtractingPlate}
                   onExtractPlate={handleExtractPlate}
                   addNotification={addNotification}
+                  mileageSelectedVehicleId={mileageSelectedVehicleId}
+                  setMileageSelectedVehicleId={setMileageSelectedVehicleId}
+                  omeOrigem={omeOrigem}
+                  isLocalMode={isLocalMode}
+                  db={db}
                 />
               </motion.div>
             )}
@@ -8242,7 +8250,12 @@ function CadastroVTR({
   onGenerateDetailedPDF,
   omeOrigemList,
   onUpdateMileage,
-  addNotification
+  addNotification,
+  mileageSelectedVehicleId,
+  setMileageSelectedVehicleId,
+  omeOrigem,
+  isLocalMode,
+  db
 }: {
   user: User | null;
   isAdmin: boolean;
@@ -8255,8 +8268,8 @@ function CadastroVTR({
   onLoadMore?: () => void;
   selectedVehicle: Vehicle | null;
   operationType: 'check-out' | 'check-in' | null;
-  view: 'list' | 'history' | 'admin' | 'form';
-  setView: (view: 'list' | 'history' | 'admin' | 'form') => void;
+  view: 'list' | 'history' | 'mileage' | 'admin' | 'form';
+  setView: (view: 'list' | 'history' | 'mileage' | 'admin' | 'form') => void;
   searchTerm: string;
   setSearchTerm: (term: string) => void;
   statusFilter: 'all' | 'available' | 'in_use' | 'maintenance';
@@ -8293,6 +8306,11 @@ function CadastroVTR({
   omeOrigemList: string[];
   onUpdateMileage?: (vehicleId: string, mileage: number) => void;
   addNotification?: (message: string, type: 'success' | 'error' | 'info') => void;
+  mileageSelectedVehicleId?: string | null;
+  setMileageSelectedVehicleId?: (id: string | null) => void;
+  omeOrigem?: string;
+  isLocalMode?: boolean;
+  db?: any;
 }) {  
 
   
@@ -8418,6 +8436,13 @@ function CadastroVTR({
           >
             <History size={18} />
             Histórico
+          </button>
+          <button 
+            onClick={() => setView('mileage')}
+            className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-4 md:px-6 py-2.5 rounded-xl font-bold transition-all text-sm md:text-base ${view === 'mileage' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+          >
+            <Gauge size={18} />
+            KM Rodado
           </button>
           {isAdmin && (
             <button 
@@ -8817,7 +8842,7 @@ function CadastroVTR({
             </div>
 
             {/* Search and Filters */}
-            <div className="flex flex-col lg:flex-row gap-4 bg-white p-4 rounded-[2rem] shadow-sm border border-slate-100">
+            <div className="flex flex-col sm:flex-row gap-4 bg-white p-4 rounded-[2rem] shadow-sm border border-slate-100">
               <div className="relative flex-1">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
                 <input 
@@ -8828,6 +8853,15 @@ function CadastroVTR({
                   className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium"
                 />
               </div>
+              <button
+                type="button"
+                onClick={() => setView('mileage')}
+                className="px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-2xl transition-all shadow-md shadow-blue-500/10 active:scale-95 flex items-center justify-center gap-2 text-sm cursor-pointer whitespace-nowrap"
+                title="Calcular quilometragem rodada da frota por período"
+              >
+                <Gauge size={18} />
+                <span>Calcular KM Rodado</span>
+              </button>
             </div>
 
             {/* Vehicle Grid */}
@@ -8842,6 +8876,10 @@ function CadastroVTR({
                   onToggleMaintenance={onToggleMaintenance}
                   submitting={submitting}
                   onUpdateMileage={onUpdateMileage}
+                  onCalculateKm={(v: any) => {
+                    if (setMileageSelectedVehicleId) setMileageSelectedVehicleId(v.id);
+                    setView('mileage');
+                  }}
                 />
               ))}
               {displayedVehicles.length === 0 && (
@@ -9089,6 +9127,26 @@ function CadastroVTR({
             </div>
           </motion.div>
         )}
+
+        {view === 'mileage' && (
+          <motion.div 
+            key="mileage"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+          >
+            <CalculoKmVtr 
+              vehicles={vehicles}
+              history={history}
+              onBackToFleet={() => setView('list')}
+              initialSelectedVehicleId={mileageSelectedVehicleId}
+              omeOrigem={omeOrigem}
+              addNotification={addNotification}
+              isLocalMode={isLocalMode}
+              db={db}
+            />
+          </motion.div>
+        )}
       </AnimatePresence>
 
       {/* Operation Modal - REMOVED (Now inline) */}
@@ -9163,7 +9221,8 @@ function VehicleCard({
   onStartRecord, 
   onToggleMaintenance,
   submitting,
-  onUpdateMileage
+  onUpdateMileage,
+  onCalculateKm
 }: any) {
   const isAvailable = vehicle.status === 'available';
   const isInUse = vehicle.status === 'in_use';
@@ -9316,6 +9375,15 @@ function VehicleCard({
           </div>
         )}
         
+        <button 
+          type="button"
+          onClick={() => onCalculateKm && onCalculateKm(vehicle)}
+          title="Calcular KM rodado por esta viatura em um período"
+          className="p-3 rounded-2xl transition-all border-2 bg-white text-slate-400 border-slate-100 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50 flex items-center justify-center cursor-pointer"
+        >
+          <Gauge size={20} />
+        </button>
+
         {isAdmin && (
           <button 
             onClick={() => onToggleMaintenance(vehicle)}
