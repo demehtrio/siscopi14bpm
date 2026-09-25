@@ -99,7 +99,8 @@ import {
   Mail,
   Phone,
   Heart,
-  LifeBuoy
+  LifeBuoy,
+  Vote
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { jsPDF } from 'jspdf';
@@ -107,6 +108,12 @@ import 'jspdf-autotable';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import InsideQSH from './components/InsideQSH';
+import { 
+  EleicoesTopBar, 
+  EleicoesBanner, 
+  EleicoesCartilhaModal, 
+  EleicoesEmblem 
+} from './components/EleicoesCartilha';
 import { ASSETS } from './assets/logos';
 import autovisionLogo from './assets/images/autovision_logo_1780679135411.png';
 
@@ -185,233 +192,7 @@ const removeWhiteBackground = (base64: string): Promise<string> => {
   });
 };
 
-// --- Setembro Amarelo Awareness Components ---
-const YellowRibbon = ({ size = 24, className = "" }: { size?: number; className?: string }) => (
-  <svg 
-    width={size} 
-    height={size} 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    xmlns="http://www.w3.org/2000/svg"
-    className={className}
-  >
-    <defs>
-      <linearGradient id="amareloRibbonGradGlobal" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#FEF08A" />
-        <stop offset="25%" stopColor="#FDE047" />
-        <stop offset="60%" stopColor="#EAB308" />
-        <stop offset="85%" stopColor="#CA8A04" />
-        <stop offset="100%" stopColor="#A16207" />
-      </linearGradient>
-    </defs>
-    <path 
-      d="M12 2C9.23858 2 7 4.23858 7 7C7 9.8 8.8 12.2 10.6 14.5L5.2 21.3C4.8 21.8 5.1 22.5 5.8 22.5H8.2L12 17.5L15.8 22.5H18.2C18.9 22.5 19.2 21.8 18.8 21.3L13.4 14.5C15.2 12.2 17 9.8 17 7C17 4.23858 14.7614 2 12 2ZM12 4.5C13.3807 4.5 14.5 5.61929 14.5 7C14.5 8.38071 13.3807 9.5 12 9.5C10.6193 9.5 9.5 8.38071 9.5 7C9.5 5.61929 10.6193 4.5 12 4.5Z" 
-      fill="url(#amareloRibbonGradGlobal)"
-    />
-  </svg>
-);
-
-const SetembroAmareloTopBar = ({ onOpenInfo }: { onOpenInfo: () => void }) => {
-  return (
-    <div className="bg-gradient-to-r from-amber-950 via-yellow-950 to-amber-950 text-white shadow-md border-b border-yellow-500/40 px-3 py-2 flex items-center justify-between sticky top-0 z-[160] transition-all">
-      <div className="max-w-7xl mx-auto w-full flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2.5 min-w-0">
-          <div className="bg-amber-900/90 p-1 rounded-full border border-yellow-400/60 shadow-inner flex items-center justify-center shrink-0">
-            <YellowRibbon size={18} />
-          </div>
-          <div className="flex items-center gap-2 flex-wrap min-w-0">
-            <span className="font-black text-amber-950 uppercase tracking-wider text-[10px] sm:text-xs bg-yellow-400 px-2.5 py-0.5 rounded-full border border-yellow-300 shadow-sm shrink-0">
-              SETEMBRO AMARELO
-            </span>
-            <span className="font-bold text-yellow-100 text-xs sm:text-sm truncate">
-              Prevenção ao Suicídio e Valorização da Vida
-            </span>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 shrink-0">
-          <a
-            href="tel:188"
-            className="flex items-center gap-1.5 px-3 py-1 bg-yellow-400 hover:bg-yellow-300 text-slate-950 rounded-full font-black text-xs transition-all shadow-sm active:scale-95 border border-yellow-200"
-            title="Ligue 188 - Centro de Valorização da Vida (CVV) - Gratuito 24h"
-          >
-            <Phone size={12} className="animate-bounce text-slate-950" />
-            <span className="hidden sm:inline">Disque 188 (CVV)</span>
-            <span className="sm:hidden">188 CVV</span>
-          </a>
-          <button
-            onClick={onOpenInfo}
-            className="flex items-center gap-1 px-2.5 py-1 bg-white/10 hover:bg-white/20 text-yellow-200 rounded-full font-bold text-xs transition-all border border-yellow-400/30"
-          >
-            <Info size={12} />
-            <span className="hidden md:inline">Apoio & Info</span>
-            <span className="md:hidden">Info</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const SetembroAmareloModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-yellow-300 dark:border-yellow-700/60 shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto custom-scrollbar relative overflow-hidden flex flex-col">
-        {/* Modal Header */}
-        <div className="p-6 sm:p-8 bg-gradient-to-r from-amber-950 via-yellow-950 to-amber-900 text-white relative">
-          <div className="absolute top-0 right-0 p-12 bg-yellow-500/10 rounded-full blur-2xl pointer-events-none"></div>
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-full transition-colors"
-          >
-            <X size={20} />
-          </button>
-          
-          <div className="flex items-center gap-4 mb-3">
-            <div className="w-14 h-14 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl flex items-center justify-center shrink-0">
-              <YellowRibbon size={36} />
-            </div>
-            <div>
-              <span className="text-[10px] font-black bg-yellow-400 text-slate-950 border border-yellow-300 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                CAMPANHA BRASILEIRA DE CONSCIENTIZAÇÃO
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight mt-1">
-                Setembro Amarelo • PMPE
-              </h2>
-            </div>
-          </div>
-          <p className="text-yellow-100 text-xs sm:text-sm font-medium leading-relaxed">
-            Mês de prevenção ao suicídio e valorização da vida. Cuidar da saúde mental é um compromisso com você, com sua família e com a sociedade.
-          </p>
-        </div>
-
-        {/* Modal Content */}
-        <div className="p-6 sm:p-8 space-y-6 text-slate-700 dark:text-slate-300">
-          {/* Main message */}
-          <div className="p-4 bg-amber-50 dark:bg-amber-950/40 border border-yellow-300 dark:border-yellow-700/60 rounded-2xl flex items-start gap-3">
-            <Heart size={22} className="text-amber-600 dark:text-yellow-400 shrink-0 mt-0.5" />
-            <p className="text-xs sm:text-sm font-medium text-amber-950 dark:text-yellow-100 leading-relaxed">
-              A Polícia Militar de Pernambuco valoriza a vida de cada militar e cidadão. Sofrimento psicológico, sobrecarga e ansiedade têm tratamento. Pedir ajuda não é fraqueza — é um ato de coragem e autocuidado. Falar é sempre a melhor escolha.
-            </p>
-          </div>
-
-          {/* Key Support Channels */}
-          <div className="space-y-3">
-            <h3 className="text-sm font-black text-slate-900 dark:text-slate-100 uppercase tracking-wider flex items-center gap-2">
-              <Phone size={16} className="text-yellow-600 dark:text-yellow-400" />
-              <span>Canais Gratuitos de Apoio e Atendimento</span>
-            </h3>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="p-4 bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-300 dark:border-yellow-700/50 rounded-2xl flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="font-black text-amber-950 dark:text-yellow-300 text-base">Disque 188 (CVV)</span>
-                    <span className="text-[9px] font-black bg-yellow-400 text-slate-950 px-2 py-0.5 rounded-full uppercase">24h • Gratuito</span>
-                  </div>
-                  <p className="text-xs text-amber-900 dark:text-yellow-100/90 font-medium">
-                    Centro de Valorização da Vida. Atendimento anônimo e sigiloso por telefone, chat ou e-mail.
-                  </p>
-                </div>
-                <div className="mt-3 flex gap-2">
-                  <a
-                    href="tel:188"
-                    className="flex-1 py-2 bg-yellow-400 hover:bg-yellow-500 text-slate-950 rounded-xl font-black text-xs flex items-center justify-center gap-1.5 transition-colors shadow-sm"
-                  >
-                    <Phone size={14} />
-                    <span>Ligar 188</span>
-                  </a>
-                  <a
-                    href="https://www.cvv.org.br"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="px-3 py-2 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl font-bold text-xs flex items-center justify-center transition-colors border border-slate-200 dark:border-slate-700"
-                    title="Acessar site do CVV"
-                  >
-                    Site
-                  </a>
-                </div>
-              </div>
-
-              <div className="p-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-700/50 rounded-2xl flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="font-black text-amber-950 dark:text-amber-200 text-base">SAMU 192 / 190</span>
-                    <span className="text-[9px] font-black bg-red-100 dark:bg-red-900/60 text-red-700 dark:text-red-200 px-2 py-0.5 rounded-full uppercase">Emergência</span>
-                  </div>
-                  <p className="text-xs text-amber-900 dark:text-amber-100/90 font-medium">
-                    Para situações de emergência médica, crises agudas de saúde mental ou risco imediato à vida.
-                  </p>
-                </div>
-                <div className="mt-3 flex gap-2">
-                  <a
-                    href="tel:192"
-                    className="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-colors shadow-sm"
-                  >
-                    <Phone size={14} />
-                    <span>SAMU 192</span>
-                  </a>
-                  <a
-                    href="tel:190"
-                    className="flex-1 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-colors shadow-sm"
-                  >
-                    <Phone size={14} />
-                    <span>190 PMPE</span>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* PMPE Psychological Support */}
-          <div className="space-y-3">
-            <h3 className="text-sm font-black text-slate-900 dark:text-slate-100 uppercase tracking-wider flex items-center gap-2">
-              <LifeBuoy size={16} className="text-yellow-600 dark:text-yellow-400" />
-              <span>Apoio Psicológico e Social PMPE (DAS / CAS)</span>
-            </h3>
-            <div className="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 text-xs font-medium space-y-2 leading-relaxed">
-              <p>
-                A Diretoria de Assistência Social (DAS) e a rede de saúde da PMPE oferecem acolhimento psicológico, psiquiátrico e serviço social a policiais militares da ativa, veteranos e seus dependentes.
-              </p>
-              <p className="text-slate-500 dark:text-slate-400">
-                Se notar que um companheiro de farda ou familiar está passando por um momento difícil, ofereça uma escuta atenta e oriente o contato com o serviço de saúde da corporação.
-              </p>
-            </div>
-          </div>
-
-          {/* Practical Tips */}
-          <div className="space-y-2">
-            <h3 className="text-sm font-black text-slate-900 dark:text-slate-100 uppercase tracking-wider flex items-center gap-2">
-              <ShieldCheck size={16} className="text-amber-600 dark:text-yellow-400" />
-              <span>Como Apoiar Quem Precisa</span>
-            </h3>
-            <ul className="text-xs font-medium space-y-1.5 list-disc list-inside text-slate-600 dark:text-slate-300">
-              <li><strong>Escute com empatia:</strong> Não julgue, não compare dores e não minimize o sofrimento.</li>
-              <li><strong>Incentive a ajuda profissional:</strong> Sugira procurar psicólogo, psiquiatra ou os serviços de saúde.</li>
-              <li><strong>Não deixe sozinho:</strong> Em momentos de crise severa, acompanhe a pessoa até o atendimento médico ou acione o 188 / 192.</li>
-            </ul>
-          </div>
-
-          {/* Closing call */}
-          <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-            <span className="text-[11px] font-bold text-amber-700 dark:text-yellow-400 flex items-center gap-1.5">
-              <YellowRibbon size={16} />
-              Setembro Amarelo • Sua vida tem valor!
-            </span>
-            <button
-              onClick={onClose}
-              className="px-5 py-2.5 bg-slate-900 dark:bg-slate-800 text-white rounded-xl font-bold text-xs hover:bg-slate-800 dark:hover:bg-slate-700 transition-colors"
-            >
-              Fechar
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
+// --- Operação Eleições 2026 Components are imported from ./components/EleicoesCartilha ---
 
 const compressImage = async (base64: string, maxWidth = 600, maxHeight = 600, quality = 0.5): Promise<string> => {
   return new Promise((resolve) => {
@@ -1146,7 +927,8 @@ export default function App() {
   const [maintenanceModal, setMaintenanceModal] = useState<{ vehicle: Vehicle, notes: string } | null>(null);
   const [currentCadastroVtrTab, setCurrentCadastroVtrTab] = useState<number>(0);
   const [showClearHistoryModal, setShowClearHistoryModal] = useState(false);
-  const [showSetembroAmareloModal, setShowSetembroAmareloModal] = useState(false);
+  const [showEleicoesModal, setShowEleicoesModal] = useState(false);
+  const [eleicoesTab, setEleicoesTab] = useState<string>('todos');
   const [clearingHistory, setClearingHistory] = useState(false);
   const [isExtractingPlate, setIsExtractingPlate] = useState(false);
   const [cadastroVtrFormData, setCadastroVtrFormData] = useState<any>({
@@ -4516,13 +4298,14 @@ export default function App() {
         onMarkAllRead={markAllAsRead}
       />
 
-      <SetembroAmareloModal 
-        isOpen={showSetembroAmareloModal} 
-        onClose={() => setShowSetembroAmareloModal(false)} 
+      <EleicoesCartilhaModal 
+        isOpen={showEleicoesModal} 
+        onClose={() => setShowEleicoesModal(false)} 
+        initialTab={eleicoesTab}
       />
 
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-20 md:pb-0 md:pl-64 transition-colors duration-300">
-        <SetembroAmareloTopBar onOpenInfo={() => setShowSetembroAmareloModal(true)} />
+        <EleicoesTopBar onOpenCartilha={(tab) => { setEleicoesTab(tab || 'todos'); setShowEleicoesModal(true); }} />
         {/* Logout Confirmation Modal */}
         {showLogoutModal && (
           <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
@@ -4590,13 +4373,18 @@ export default function App() {
 
         {/* Sidebar Desktop */}
         <aside className="hidden md:flex flex-col fixed left-0 top-0 bottom-0 w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transition-colors duration-300">
-          <div className="flex flex-col bg-amber-950 text-white border-b-4 border-yellow-500 shadow-lg relative overflow-hidden">
-            <div className="bg-gradient-to-r from-amber-900 to-yellow-950 px-3 py-1.5 flex items-center justify-between border-b border-yellow-600/40">
-              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-yellow-200 tracking-wider">
-                <YellowRibbon size={14} />
-                <span>Setembro Amarelo</span>
+          <div className="flex flex-col bg-slate-950 text-white border-b-4 border-blue-600 shadow-lg relative overflow-hidden">
+            <div className="bg-gradient-to-r from-slate-950 via-blue-950 to-slate-900 px-3 py-1.5 flex items-center justify-between border-b border-blue-700/40">
+              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-blue-200 tracking-wider">
+                <EleicoesEmblem size={14} />
+                <span>Eleições 2026</span>
               </div>
-              <span className="text-[9px] font-bold text-yellow-300 bg-yellow-950/70 px-1.5 py-0.5 rounded border border-yellow-600/40">Valorização da Vida</span>
+              <button 
+                onClick={() => { setEleicoesTab('todos'); setShowEleicoesModal(true); }}
+                className="text-[9px] font-bold text-amber-300 bg-blue-900/70 hover:bg-blue-800 px-1.5 py-0.5 rounded border border-blue-500/40 transition-colors"
+              >
+                Cartilha PMPE
+              </button>
             </div>
             <div className="p-5 flex items-center gap-3">
               <div 
@@ -4746,7 +4534,7 @@ export default function App() {
         </nav>
 
         {/* Mobile Header */}
-        <header className="md:hidden bg-amber-950 text-white border-b-4 border-yellow-500 p-3.5 flex items-center justify-between sticky top-0 z-[150] shadow-lg">
+        <header className="md:hidden bg-slate-950 text-white border-b-4 border-blue-600 p-3.5 flex items-center justify-between sticky top-0 z-[150] shadow-lg">
           <div className="flex items-center gap-3">
             <div className="bg-white p-1 rounded-lg shadow-sm">
               <SafeImage 
@@ -4759,9 +4547,12 @@ export default function App() {
             <div className="flex flex-col">
               <div className="flex items-center gap-1.5">
                 <span className="font-black text-lg tracking-tighter leading-none">{omeOrigem}</span>
-                <span className="px-1.5 py-0.5 bg-yellow-400 text-slate-950 rounded-full text-[8px] font-black uppercase flex items-center gap-0.5 border border-yellow-300 shadow-sm">
-                  <YellowRibbon size={10} /> Amarelo
-                </span>
+                <button 
+                  onClick={() => { setEleicoesTab('todos'); setShowEleicoesModal(true); }}
+                  className="px-1.5 py-0.5 bg-gradient-to-r from-amber-400 to-amber-300 text-slate-950 rounded-full text-[8px] font-black uppercase flex items-center gap-0.5 border border-amber-200 shadow-sm active:scale-95"
+                >
+                  <Vote size={9} /> Eleições 2026
+                </button>
               </div>
               <span className="text-[9px] font-bold opacity-80 uppercase">PMPE</span>
               <SafeImage 
@@ -4873,13 +4664,13 @@ export default function App() {
                   />
                 </div>
 
-                <header className="mb-8 p-8 sm:p-10 bg-white dark:bg-slate-900 rounded-[3rem] border-b-[12px] border-yellow-500 shadow-2xl relative overflow-hidden flex flex-col items-center text-center z-10 transition-colors">
-                  <div className="absolute top-0 left-0 w-full h-2.5 bg-gradient-to-r from-yellow-500 via-amber-400 to-yellow-600"></div>
+                <header className="mb-8 p-8 sm:p-10 bg-white dark:bg-slate-900 rounded-[3rem] border-b-[12px] border-blue-700 dark:border-blue-600 shadow-2xl relative overflow-hidden flex flex-col items-center text-center z-10 transition-colors">
+                  <div className="absolute top-0 left-0 w-full h-2.5 bg-gradient-to-r from-blue-700 via-indigo-600 to-amber-400"></div>
                   
-                  {/* Setembro Amarelo Badge in Dashboard Header */}
-                  <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-yellow-100 dark:bg-amber-950/80 border border-yellow-400/80 dark:border-yellow-600/50 rounded-full mb-5 text-amber-950 dark:text-yellow-300 font-extrabold text-xs uppercase tracking-wider shadow-sm">
-                    <YellowRibbon size={16} />
-                    <span>Setembro Amarelo • Prevenção ao Suicídio e Valorização da Vida</span>
+                  {/* Eleições 2026 Badge in Dashboard Header */}
+                  <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50 dark:bg-blue-950/80 border border-blue-400/80 dark:border-blue-600/50 rounded-full mb-5 text-blue-950 dark:text-blue-200 font-extrabold text-xs uppercase tracking-wider shadow-sm">
+                    <Vote size={16} className="text-amber-500" />
+                    <span>Operação Eleições 2026 • Garantia da Lei e da Ordem Eleitoral</span>
                   </div>
 
                   <div className="bg-white dark:bg-slate-800 p-5 rounded-[2.5rem] shadow-xl mb-6 relative z-10 border border-slate-100 dark:border-slate-700">
@@ -4892,7 +4683,7 @@ export default function App() {
                   </div>
                   <div className="relative z-10">
                     <h1 className="text-4xl sm:text-5xl font-black text-slate-900 dark:text-slate-100 tracking-tighter mb-2"><span>Olá, {user.displayName?.split(' ')[0]}!</span></h1>
-                    <p className="text-amber-800 dark:text-yellow-400 font-black text-2xl uppercase tracking-tight"><span>{omeOrigem}</span></p>
+                    <p className="text-blue-800 dark:text-blue-400 font-black text-2xl uppercase tracking-tight"><span>{omeOrigem}</span></p>
                     <p className="text-slate-500 dark:text-slate-400 font-bold text-base uppercase tracking-widest opacity-60"><span>PMPE</span></p>
                     <div className="flex flex-col items-center justify-center gap-2 mt-4">
                       <div className="flex items-center justify-center gap-4">
@@ -4910,55 +4701,8 @@ export default function App() {
                   </div>
                 </header>
 
-                {/* Card de Destaque: Setembro Amarelo - A Vida é a Melhor Escolha */}
-                <div className="p-6 sm:p-8 bg-gradient-to-br from-amber-950 via-yellow-950 to-amber-900 text-white rounded-[2.5rem] border border-yellow-500/40 shadow-2xl overflow-hidden relative mb-8 group">
-                  {/* Decorative background ribbon watermark */}
-                  <div className="absolute -right-12 -bottom-12 opacity-10 pointer-events-none group-hover:scale-110 transition-transform duration-700">
-                    <YellowRibbon size={260} />
-                  </div>
-                  
-                  <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-                    <div className="flex items-start gap-4">
-                      <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-amber-600 rounded-2xl flex items-center justify-center border border-yellow-200/50 shadow-xl shrink-0 p-3">
-                        <YellowRibbon size={38} />
-                      </div>
-                      <div className="space-y-1.5 max-w-2xl">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="text-[10px] font-black bg-yellow-400 text-slate-950 border border-yellow-300 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                            CAMPANHA NACIONAL
-                          </span>
-                          <span className="text-[10px] font-bold text-yellow-300 uppercase tracking-widest">
-                            VALORIZAÇÃO DA VIDA • CVV 188
-                          </span>
-                        </div>
-                        <h3 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-                          Setembro Amarelo: A Vida é a Melhor Escolha
-                        </h3>
-                        <p className="text-yellow-100/90 text-xs sm:text-sm font-medium leading-relaxed">
-                          A Polícia Militar de Pernambuco apoia a campanha brasileira de conscientização sobre a prevenção ao suicídio. Cuidar de você e de quem está ao seu lado é uma missão diária. Falar é o primeiro passo para o acolhimento!
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row gap-3 w-full lg:w-auto shrink-0 relative z-10">
-                      <a 
-                        href="tel:188" 
-                        className="px-5 py-3.5 bg-yellow-400 hover:bg-yellow-300 text-slate-950 font-black rounded-xl shadow-lg shadow-yellow-500/20 transition-all text-center flex items-center justify-center gap-2 active:scale-95 text-sm border border-yellow-200"
-                        title="Ligue 188 - CVV (24h, gratuito)"
-                      >
-                        <Phone size={16} />
-                        <span>Disque 188 (CVV Apoio)</span>
-                      </a>
-                      <button 
-                        onClick={() => setShowSetembroAmareloModal(true)}
-                        className="px-5 py-3.5 bg-white/10 hover:bg-white/20 text-yellow-100 font-bold rounded-xl border border-yellow-400/30 transition-all text-center flex items-center justify-center gap-2 active:scale-95 text-sm"
-                      >
-                        <Heart size={16} className="text-yellow-400" />
-                        <span>Orientações & Apoio</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                {/* Banner de Destaque: Eleições 2026 - Cartilha de Orientações da PMPE */}
+                <EleicoesBanner onOpenCartilha={(tab) => { setEleicoesTab(tab || 'todos'); setShowEleicoesModal(true); }} />
 
                 {/* Banners Individuais: Polícia Ágil, Dentro do QSH & Escalas PMPE */}
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
