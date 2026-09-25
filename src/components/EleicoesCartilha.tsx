@@ -119,7 +119,7 @@ export const EleicoesBanner = ({ onOpenCartilha }: { onOpenCartilha: (tab?: stri
 
             {/* Quick unboxed text badges */}
             <div className="pt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-semibold text-blue-200/90">
-              <span className="flex items-center gap-1 text-red-300"><ShieldAlert size={12} /> Raio de 100m de Armas</span>
+              <span className="flex items-center gap-1 text-red-300"><ShieldAlert size={12} /> Raio de 100m</span>
               <span aria-hidden="true" className="text-blue-400/60">·</span>
               <span className="flex items-center gap-1 text-amber-300"><Smartphone size={12} /> Sem Celular na Urna</span>
               <span aria-hidden="true" className="text-blue-400/60">·</span>
