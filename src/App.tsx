@@ -101,7 +101,8 @@ import {
   Heart,
   LifeBuoy,
   Vote,
-  Gauge
+  Gauge,
+  Ribbon
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { jsPDF } from 'jspdf';
@@ -115,6 +116,13 @@ import {
   EleicoesCartilhaModal, 
   EleicoesEmblem 
 } from './components/EleicoesCartilha';
+import {
+  OutubroRosaTopBar,
+  OutubroRosaBanner,
+  OutubroRosaModal,
+  OutubroRosaEmblem,
+  PinkRibbonSVG
+} from './components/OutubroRosa';
 import CalculoKmVtr from './components/CalculoKmVtr';
 import { ASSETS } from './assets/logos';
 import autovisionLogo from './assets/images/autovision_logo_1780679135411.png';
@@ -932,6 +940,8 @@ export default function App() {
   const [showClearHistoryModal, setShowClearHistoryModal] = useState(false);
   const [showEleicoesModal, setShowEleicoesModal] = useState(false);
   const [eleicoesTab, setEleicoesTab] = useState<string>('todos');
+  const [showOutubroRosaModal, setShowOutubroRosaModal] = useState(false);
+  const [outubroRosaTab, setOutubroRosaTab] = useState<string>('geral');
   const [clearingHistory, setClearingHistory] = useState(false);
   const [isExtractingPlate, setIsExtractingPlate] = useState(false);
   const [cadastroVtrFormData, setCadastroVtrFormData] = useState<any>({
@@ -4307,8 +4317,14 @@ export default function App() {
         initialTab={eleicoesTab}
       />
 
+      <OutubroRosaModal 
+        isOpen={showOutubroRosaModal} 
+        onClose={() => setShowOutubroRosaModal(false)} 
+        initialTab={outubroRosaTab}
+      />
+
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-20 md:pb-0 md:pl-64 transition-colors duration-300">
-        <EleicoesTopBar onOpenCartilha={(tab) => { setEleicoesTab(tab || 'todos'); setShowEleicoesModal(true); }} />
+        <OutubroRosaTopBar onOpenModal={(tab) => { setOutubroRosaTab(tab || 'geral'); setShowOutubroRosaModal(true); }} />
         {/* Logout Confirmation Modal */}
         {showLogoutModal && (
           <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
@@ -4376,17 +4392,17 @@ export default function App() {
 
         {/* Sidebar Desktop */}
         <aside className="hidden md:flex flex-col fixed left-0 top-0 bottom-0 w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transition-colors duration-300">
-          <div className="flex flex-col bg-slate-950 text-white border-b-4 border-blue-600 shadow-lg relative overflow-hidden">
-            <div className="bg-gradient-to-r from-slate-950 via-blue-950 to-slate-900 px-3 py-1.5 flex items-center justify-between border-b border-blue-700/40">
-              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-blue-200 tracking-wider">
-                <EleicoesEmblem size={14} />
-                <span>Eleições 2026</span>
+          <div className="flex flex-col bg-slate-950 text-white border-b-4 border-rose-500 shadow-lg relative overflow-hidden">
+            <div className="bg-gradient-to-r from-slate-950 via-rose-950 to-slate-900 px-3 py-1.5 flex items-center justify-between border-b border-rose-700/40">
+              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-pink-200 tracking-wider">
+                <OutubroRosaEmblem size={14} />
+                <span>Outubro Rosa</span>
               </div>
               <button 
-                onClick={() => { setEleicoesTab('todos'); setShowEleicoesModal(true); }}
-                className="text-[9px] font-bold text-amber-300 bg-blue-900/70 hover:bg-blue-800 px-1.5 py-0.5 rounded border border-blue-500/40 transition-colors"
+                onClick={() => { setOutubroRosaTab('geral'); setShowOutubroRosaModal(true); }}
+                className="text-[9px] font-bold text-pink-200 bg-rose-900/70 hover:bg-rose-800 px-1.5 py-0.5 rounded border border-rose-500/40 transition-colors cursor-pointer"
               >
-                Cartilha PMPE
+                Guia Rosa
               </button>
             </div>
             <div className="p-5 flex items-center gap-3">
@@ -4537,7 +4553,7 @@ export default function App() {
         </nav>
 
         {/* Mobile Header */}
-        <header className="md:hidden bg-slate-950 text-white border-b-4 border-blue-600 p-3.5 flex items-center justify-between sticky top-0 z-[150] shadow-lg">
+        <header className="md:hidden bg-slate-950 text-white border-b-4 border-rose-500 p-3.5 flex items-center justify-between sticky top-0 z-[150] shadow-lg">
           <div className="flex items-center gap-3">
             <div className="bg-white p-1 rounded-lg shadow-sm">
               <SafeImage 
@@ -4551,10 +4567,10 @@ export default function App() {
               <div className="flex items-center gap-1.5">
                 <span className="font-black text-lg tracking-tighter leading-none">{omeOrigem}</span>
                 <button 
-                  onClick={() => { setEleicoesTab('todos'); setShowEleicoesModal(true); }}
-                  className="px-1.5 py-0.5 bg-gradient-to-r from-amber-400 to-amber-300 text-slate-950 rounded-full text-[8px] font-black uppercase flex items-center gap-0.5 border border-amber-200 shadow-sm active:scale-95"
+                  onClick={() => { setOutubroRosaTab('geral'); setShowOutubroRosaModal(true); }}
+                  className="px-2 py-0.5 bg-gradient-to-r from-pink-500 to-rose-600 text-white rounded-full text-[8px] font-black uppercase flex items-center gap-1 border border-pink-400/50 shadow-sm active:scale-95 cursor-pointer"
                 >
-                  <Vote size={9} /> Eleições 2026
+                  <Ribbon size={9} /> Outubro Rosa
                 </button>
               </div>
               <span className="text-[9px] font-bold opacity-80 uppercase">PMPE</span>
@@ -4704,8 +4720,8 @@ export default function App() {
                   </div>
                 </header>
 
-                {/* Banner de Destaque: Eleições 2026 - Cartilha de Orientações da PMPE */}
-                <EleicoesBanner onOpenCartilha={(tab) => { setEleicoesTab(tab || 'todos'); setShowEleicoesModal(true); }} />
+                {/* Banner de Destaque: Outubro Rosa - Prevenção e Diagnóstico Precoce */}
+                <OutubroRosaBanner onOpenModal={(tab) => { setOutubroRosaTab(tab || 'geral'); setShowOutubroRosaModal(true); }} />
 
                 {/* Banners Individuais: Polícia Ágil, Dentro do QSH & Escalas PMPE */}
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
