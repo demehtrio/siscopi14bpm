@@ -100,7 +100,6 @@ import {
   Phone,
   Heart,
   LifeBuoy,
-  Vote,
   Gauge,
   Ribbon
 } from 'lucide-react';
@@ -110,12 +109,6 @@ import 'jspdf-autotable';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import InsideQSH from './components/InsideQSH';
-import { 
-  EleicoesTopBar, 
-  EleicoesBanner, 
-  EleicoesCartilhaModal, 
-  EleicoesEmblem 
-} from './components/EleicoesCartilha';
 import {
   OutubroRosaTopBar,
   OutubroRosaBanner,
@@ -201,8 +194,6 @@ const removeWhiteBackground = (base64: string): Promise<string> => {
     img.src = base64;
   });
 };
-
-// --- Operação Eleições 2026 Components are imported from ./components/EleicoesCartilha ---
 
 const compressImage = async (base64: string, maxWidth = 600, maxHeight = 600, quality = 0.5): Promise<string> => {
   return new Promise((resolve) => {
@@ -938,8 +929,6 @@ export default function App() {
   const [maintenanceModal, setMaintenanceModal] = useState<{ vehicle: Vehicle, notes: string } | null>(null);
   const [currentCadastroVtrTab, setCurrentCadastroVtrTab] = useState<number>(0);
   const [showClearHistoryModal, setShowClearHistoryModal] = useState(false);
-  const [showEleicoesModal, setShowEleicoesModal] = useState(false);
-  const [eleicoesTab, setEleicoesTab] = useState<string>('todos');
   const [showOutubroRosaModal, setShowOutubroRosaModal] = useState(false);
   const [outubroRosaTab, setOutubroRosaTab] = useState<string>('geral');
   const [clearingHistory, setClearingHistory] = useState(false);
@@ -4311,12 +4300,6 @@ export default function App() {
         onMarkAllRead={markAllAsRead}
       />
 
-      <EleicoesCartilhaModal 
-        isOpen={showEleicoesModal} 
-        onClose={() => setShowEleicoesModal(false)} 
-        initialTab={eleicoesTab}
-      />
-
       <OutubroRosaModal 
         isOpen={showOutubroRosaModal} 
         onClose={() => setShowOutubroRosaModal(false)} 
@@ -4683,14 +4666,19 @@ export default function App() {
                   />
                 </div>
 
-                <header className="mb-8 p-8 sm:p-10 bg-white dark:bg-slate-900 rounded-[3rem] border-b-[12px] border-blue-700 dark:border-blue-600 shadow-2xl relative overflow-hidden flex flex-col items-center text-center z-10 transition-colors">
-                  <div className="absolute top-0 left-0 w-full h-2.5 bg-gradient-to-r from-blue-700 via-indigo-600 to-amber-400"></div>
+                <header className="mb-8 p-8 sm:p-10 bg-white dark:bg-slate-900 rounded-[3rem] border-b-[12px] border-rose-600 dark:border-rose-500 shadow-2xl relative overflow-hidden flex flex-col items-center text-center z-10 transition-colors">
+                  <div className="absolute top-0 left-0 w-full h-2.5 bg-gradient-to-r from-rose-500 via-pink-500 to-rose-400"></div>
                   
-                  {/* Eleições 2026 Badge in Dashboard Header */}
-                  <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50 dark:bg-blue-950/80 border border-blue-400/80 dark:border-blue-600/50 rounded-full mb-5 text-blue-950 dark:text-blue-200 font-extrabold text-xs uppercase tracking-wider shadow-sm">
-                    <Vote size={16} className="text-amber-500" />
-                    <span>Operação Eleições 2026 • Garantia da Lei e da Ordem Eleitoral</span>
-                  </div>
+                  {/* Campanha Outubro Rosa Badge in Dashboard Header */}
+                  <button
+                    type="button"
+                    onClick={() => { setOutubroRosaTab('geral'); setShowOutubroRosaModal(true); }}
+                    className="inline-flex items-center gap-2 px-4 py-1.5 bg-rose-50 hover:bg-rose-100/90 dark:bg-rose-950/70 dark:hover:bg-rose-900/70 border border-rose-300 dark:border-rose-700/60 rounded-full mb-5 text-rose-800 dark:text-rose-200 font-extrabold text-xs uppercase tracking-wider shadow-sm transition-all hover:scale-105 active:scale-95 cursor-pointer group"
+                    title="Clique para saber mais sobre a campanha Outubro Rosa"
+                  >
+                    <Ribbon size={16} className="text-rose-600 dark:text-rose-400 fill-rose-500 group-hover:rotate-12 transition-transform" />
+                    <span>Campanha Outubro Rosa • Prevenção e Diagnóstico Precoce</span>
+                  </button>
 
                   <div className="bg-white dark:bg-slate-800 p-5 rounded-[2.5rem] shadow-xl mb-6 relative z-10 border border-slate-100 dark:border-slate-700">
                     <SafeImage 
