@@ -110,12 +110,12 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import InsideQSH from './components/InsideQSH';
 import {
-  OutubroRosaTopBar,
-  OutubroRosaBanner,
-  OutubroRosaModal,
-  OutubroRosaEmblem,
-  PinkRibbonSVG
-} from './components/OutubroRosa';
+  NovembroAzulTopBar,
+  NovembroAzulBanner,
+  NovembroAzulModal,
+  NovembroAzulEmblem,
+  BlueRibbonSVG
+} from './components/NovembroAzul';
 import CalculoKmVtr from './components/CalculoKmVtr';
 import { ASSETS } from './assets/logos';
 import autovisionLogo from './assets/images/autovision_logo_1780679135411.png';
@@ -929,8 +929,8 @@ export default function App() {
   const [maintenanceModal, setMaintenanceModal] = useState<{ vehicle: Vehicle, notes: string } | null>(null);
   const [currentCadastroVtrTab, setCurrentCadastroVtrTab] = useState<number>(0);
   const [showClearHistoryModal, setShowClearHistoryModal] = useState(false);
-  const [showOutubroRosaModal, setShowOutubroRosaModal] = useState(false);
-  const [outubroRosaTab, setOutubroRosaTab] = useState<string>('geral');
+  const [showNovembroAzulModal, setShowNovembroAzulModal] = useState(false);
+  const [novembroAzulTab, setNovembroAzulTab] = useState<string>('geral');
   const [clearingHistory, setClearingHistory] = useState(false);
   const [isExtractingPlate, setIsExtractingPlate] = useState(false);
   const [cadastroVtrFormData, setCadastroVtrFormData] = useState<any>({
@@ -4300,14 +4300,14 @@ export default function App() {
         onMarkAllRead={markAllAsRead}
       />
 
-      <OutubroRosaModal 
-        isOpen={showOutubroRosaModal} 
-        onClose={() => setShowOutubroRosaModal(false)} 
-        initialTab={outubroRosaTab}
+      <NovembroAzulModal 
+        isOpen={showNovembroAzulModal} 
+        onClose={() => setShowNovembroAzulModal(false)} 
+        initialTab={novembroAzulTab}
       />
 
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-20 md:pb-0 md:pl-64 transition-colors duration-300">
-        <OutubroRosaTopBar onOpenModal={(tab) => { setOutubroRosaTab(tab || 'geral'); setShowOutubroRosaModal(true); }} />
+        <NovembroAzulTopBar onOpenModal={(tab) => { setNovembroAzulTab(tab || 'geral'); setShowNovembroAzulModal(true); }} />
         {/* Logout Confirmation Modal */}
         {showLogoutModal && (
           <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
@@ -4375,17 +4375,17 @@ export default function App() {
 
         {/* Sidebar Desktop */}
         <aside className="hidden md:flex flex-col fixed left-0 top-0 bottom-0 w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transition-colors duration-300">
-          <div className="flex flex-col bg-slate-950 text-white border-b-4 border-rose-500 shadow-lg relative overflow-hidden">
-            <div className="bg-gradient-to-r from-slate-950 via-rose-950 to-slate-900 px-3 py-1.5 flex items-center justify-between border-b border-rose-700/40">
-              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-pink-200 tracking-wider">
-                <OutubroRosaEmblem size={14} />
-                <span>Outubro Rosa</span>
+          <div className="flex flex-col bg-slate-950 text-white border-b-4 border-blue-600 shadow-lg relative overflow-hidden">
+            <div className="bg-gradient-to-r from-slate-950 via-blue-950 to-slate-900 px-3 py-1.5 flex items-center justify-between border-b border-blue-700/40">
+              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-blue-200 tracking-wider">
+                <NovembroAzulEmblem size={14} />
+                <span>Novembro Azul</span>
               </div>
               <button 
-                onClick={() => { setOutubroRosaTab('geral'); setShowOutubroRosaModal(true); }}
-                className="text-[9px] font-bold text-pink-200 bg-rose-900/70 hover:bg-rose-800 px-1.5 py-0.5 rounded border border-rose-500/40 transition-colors cursor-pointer"
+                onClick={() => { setNovembroAzulTab('geral'); setShowNovembroAzulModal(true); }}
+                className="text-[9px] font-bold text-blue-200 bg-blue-900/70 hover:bg-blue-800 px-1.5 py-0.5 rounded border border-blue-500/40 transition-colors cursor-pointer"
               >
-                Guia Rosa
+                Guia Azul
               </button>
             </div>
             <div className="p-5 flex items-center gap-3">
@@ -4536,7 +4536,7 @@ export default function App() {
         </nav>
 
         {/* Mobile Header */}
-        <header className="md:hidden bg-slate-950 text-white border-b-4 border-rose-500 p-3.5 flex items-center justify-between sticky top-0 z-[150] shadow-lg">
+        <header className="md:hidden bg-slate-950 text-white border-b-4 border-blue-600 p-3.5 flex items-center justify-between sticky top-0 z-[150] shadow-lg">
           <div className="flex items-center gap-3">
             <div className="bg-white p-1 rounded-lg shadow-sm">
               <SafeImage 
@@ -4550,10 +4550,10 @@ export default function App() {
               <div className="flex items-center gap-1.5">
                 <span className="font-black text-lg tracking-tighter leading-none">{omeOrigem}</span>
                 <button 
-                  onClick={() => { setOutubroRosaTab('geral'); setShowOutubroRosaModal(true); }}
-                  className="px-2 py-0.5 bg-gradient-to-r from-pink-500 to-rose-600 text-white rounded-full text-[8px] font-black uppercase flex items-center gap-1 border border-pink-400/50 shadow-sm active:scale-95 cursor-pointer"
+                  onClick={() => { setNovembroAzulTab('geral'); setShowNovembroAzulModal(true); }}
+                  className="px-2 py-0.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-sky-600 text-white rounded-full text-[8px] font-black uppercase flex items-center gap-1 border border-blue-400/50 shadow-sm active:scale-95 cursor-pointer"
                 >
-                  <Ribbon size={9} /> Outubro Rosa
+                  <Ribbon size={9} /> Novembro Azul
                 </button>
               </div>
               <span className="text-[9px] font-bold opacity-80 uppercase">PMPE</span>
@@ -4666,18 +4666,18 @@ export default function App() {
                   />
                 </div>
 
-                <header className="mb-8 p-8 sm:p-10 bg-white dark:bg-slate-900 rounded-[3rem] border-b-[12px] border-rose-600 dark:border-rose-500 shadow-2xl relative overflow-hidden flex flex-col items-center text-center z-10 transition-colors">
-                  <div className="absolute top-0 left-0 w-full h-2.5 bg-gradient-to-r from-rose-500 via-pink-500 to-rose-400"></div>
+                <header className="mb-8 p-8 sm:p-10 bg-white dark:bg-slate-900 rounded-[3rem] border-b-[12px] border-blue-700 dark:border-blue-600 shadow-2xl relative overflow-hidden flex flex-col items-center text-center z-10 transition-colors">
+                  <div className="absolute top-0 left-0 w-full h-2.5 bg-gradient-to-r from-blue-700 via-sky-500 to-indigo-600"></div>
                   
-                  {/* Campanha Outubro Rosa Badge in Dashboard Header */}
+                  {/* Campanha Novembro Azul Badge in Dashboard Header */}
                   <button
                     type="button"
-                    onClick={() => { setOutubroRosaTab('geral'); setShowOutubroRosaModal(true); }}
-                    className="inline-flex items-center gap-2 px-4 py-1.5 bg-rose-50 hover:bg-rose-100/90 dark:bg-rose-950/70 dark:hover:bg-rose-900/70 border border-rose-300 dark:border-rose-700/60 rounded-full mb-5 text-rose-800 dark:text-rose-200 font-extrabold text-xs uppercase tracking-wider shadow-sm transition-all hover:scale-105 active:scale-95 cursor-pointer group"
-                    title="Clique para saber mais sobre a campanha Outubro Rosa"
+                    onClick={() => { setNovembroAzulTab('geral'); setShowNovembroAzulModal(true); }}
+                    className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50 hover:bg-blue-100/90 dark:bg-blue-950/70 dark:hover:bg-blue-900/70 border border-blue-300 dark:border-blue-700/60 rounded-full mb-5 text-blue-900 dark:text-blue-200 font-extrabold text-xs uppercase tracking-wider shadow-sm transition-all hover:scale-105 active:scale-95 cursor-pointer group"
+                    title="Clique para saber mais sobre a campanha Novembro Azul"
                   >
-                    <Ribbon size={16} className="text-rose-600 dark:text-rose-400 fill-rose-500 group-hover:rotate-12 transition-transform" />
-                    <span>Campanha Outubro Rosa • Prevenção e Diagnóstico Precoce</span>
+                    <Ribbon size={16} className="text-blue-600 dark:text-blue-400 fill-blue-500 group-hover:rotate-12 transition-transform" />
+                    <span>Campanha Novembro Azul • Saúde do Homem & Prevenção</span>
                   </button>
 
                   <div className="bg-white dark:bg-slate-800 p-5 rounded-[2.5rem] shadow-xl mb-6 relative z-10 border border-slate-100 dark:border-slate-700">
@@ -4708,8 +4708,8 @@ export default function App() {
                   </div>
                 </header>
 
-                {/* Banner de Destaque: Outubro Rosa - Prevenção e Diagnóstico Precoce */}
-                <OutubroRosaBanner onOpenModal={(tab) => { setOutubroRosaTab(tab || 'geral'); setShowOutubroRosaModal(true); }} />
+                {/* Banner de Destaque: Novembro Azul - Saúde do Homem & Prevenção */}
+                <NovembroAzulBanner onOpenModal={(tab) => { setNovembroAzulTab(tab || 'geral'); setShowNovembroAzulModal(true); }} />
 
                 {/* Banners Individuais: Polícia Ágil, Dentro do QSH & Escalas PMPE */}
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
